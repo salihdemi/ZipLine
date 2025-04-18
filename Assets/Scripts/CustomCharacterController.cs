@@ -70,4 +70,25 @@ public class CustomCharacterController : MonoBehaviour
             transform.localScale = localScale;
         }
     }
+
+
+
+
+
+
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if(collision.tag == "Rope")
+        {
+            Rope rope = collision.gameObject?.GetComponent<Rope>();
+            Slide(rope);
+        }
+    }
+
+    void Slide (Rope rope)
+    {
+        transform.position = rope.pointP;
+        rope.Slide(transform, rope.pointM, 5);
+    }
 }
