@@ -534,7 +534,7 @@ GameObject:
   - component: {fileID: 847190491}
   m_Layer: 6
   m_Name: String
-  m_TagString: Rope
+  m_TagString: Wire
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -619,10 +619,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   thicness: 0.05
-  plus: {fileID: 1960900920}
-  minus: {fileID: 1001818837}
-  pointP: {x: 0, y: 0}
-  pointM: {x: 0, y: 0}
+  plusTower: {fileID: 1960900920}
+  minusTower: {fileID: 1001818837}
+  plusPoint: {x: 0, y: 0, z: 0}
+  minusPoint: {x: 0, y: 0, z: 0}
+  duration: 1
 --- !u!61 &847190491
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -765,6 +766,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: df994a39cf1127340b0d8e890509ea6e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  poleType: 0
   pointDistance: {x: 0, y: 0.75, z: 0}
 --- !u!1 &1093856063
 GameObject:
@@ -863,7 +865,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   speed: 4
   jumpingPower: 10
-  rb: {fileID: 1241484967}
   groundCheck: {fileID: 450870213}
   groundLayer:
     serializedVersion: 2
@@ -1293,6 +1294,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: df994a39cf1127340b0d8e890509ea6e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  poleType: 0
   pointDistance: {x: 0, y: 0.75, z: 0}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
