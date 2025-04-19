@@ -60,56 +60,55 @@ public class Wire : MonoBehaviour
     }
     public Vector2 GetSlidePoint(float t, PoleType direction)//!
     {
-        return direction == PoleType.Plus
-            ? Vector2.Lerp(plusPoint, minusPoint, t)
-            : Vector2.Lerp(minusPoint, plusPoint, t);
-    }
-
-    public PoleType GetSuggestedDirection(Vector2 from)
-    {
-        float distToPlus = Vector2.Distance(from, plusPoint);
-        float distToMinus = Vector2.Distance(from, minusPoint);
-        return distToPlus < distToMinus ? PoleType.Plus : PoleType.Minus;
-    }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    public void Slide(Transform obj, Vector3 target, float duration)
-    {
-        StartCoroutine(MoveToPosition(obj, target, duration));
-    }
-
-
-    IEnumerator MoveToPosition(Transform obj, Vector3 target, float duration)
-    {
-        Vector3 start = obj.position;
-        float elapsed = 0f;
-
-        while (elapsed < duration)
+        if (direction == PoleType.Plus)
         {
-            obj.position = Vector3.Lerp(start, target, elapsed / duration);
-            elapsed += Time.deltaTime;
-            yield return null;
+            return Vector2.Lerp(plusPoint, minusPoint, t);
+        }
+        else
+        {
+            return Vector2.Lerp(minusPoint, plusPoint, t);
+        }
+    }
+    public float GetNormalizedT(Vector2 position, PoleType direction)
+    {
+        Vector2 start;
+        Vector2 end;
+
+        if (direction == PoleType.Plus)
+        {
+            start = plusPoint;
+            end = minusPoint;
+        }
+        else
+        {
+            start = minusPoint;
+            end = plusPoint;
         }
 
-        obj.position = target; // Son konumu sabitle
+        Vector2 fullVector = end - start;
+        Vector2 hitVector = position - start;
+
+        float projected = Vector2.Dot(hitVector, fullVector.normalized);
+        float t = projected / fullVector.magnitude;
+
+        return Mathf.Clamp01(t);
     }
+
+
+    public bool IsDirectionRight(PoleType direction)
+    {
+        Vector2 moveVector;
+
+        if (direction == PoleType.Plus)
+            moveVector = minusPoint - plusPoint;
+        else
+            moveVector = plusPoint - minusPoint;
+
+        return moveVector.x > 0;
+    }
+
+
+
 
 
 

@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections;
+using System.ComponentModel.Design;
 
 public class CustomCharacterController : MonoBehaviour
 {
@@ -20,7 +21,6 @@ public class CustomCharacterController : MonoBehaviour
     private Apparatus apparatus;
 
     private float horizontal;
-    private bool isFacingRight = true;
     bool isSliding = false;
     private void Awake()
     {
@@ -60,14 +60,12 @@ public class CustomCharacterController : MonoBehaviour
     }
     private void Flip()
     {
-        if (isFacingRight && horizontal < 0f || !isFacingRight && horizontal > 0f)
+        bool x = spriteRenderer.flipX;
+        if (!isSliding && (!x && horizontal < 0f || x && horizontal > 0f))
         {
-            isFacingRight = !isFacingRight;
-            //spriteRenderer.flipX = isFacingRight;
-            Vector3 localScale = transform.localScale;
-            localScale.x *= -1f;
-            transform.localScale = localScale;
+            x = !x;
         }
+        spriteRenderer.flipX = x;
     }
     private bool IsGrounded()
     {
@@ -84,55 +82,46 @@ public class CustomCharacterController : MonoBehaviour
         if (collision.CompareTag("Wire"))
         {
             Wire wire = collision.GetComponent<Wire>();
-            if (wire == null) return;
-
-            // Kayma yönünü otomatik tahmin et
-            PoleType suggestedDirection = wire.GetSuggestedDirection(transform.position);
-            PoleType deviceDirection = apparatus.currentDirection;
-
-            // Aparat yönü alýnýr (Apparatus bileþeni üzerinden)
-            if (apparatus == null) return;
-
-
-            // Aparat yönü ile tel yönü uyumlu mu kontrol et
-            if (!IsDirectionCompatible(suggestedDirection, deviceDirection))
-            {
-                Debug.Log("Aparat yönü bu kayýþ yönüyle uyumlu deðil!");
-                return;
-            }
-
-            // Kayýþý baþlat
-            StartSlide(wire, suggestedDirection);
+            CollideWire(wire);
         }
     }
-    private bool IsDirectionCompatible(PoleType suggested, PoleType device)
+    //tek baþvurumluk
+    private void CollideWire(Wire wire)
     {
-        // Þimdilik yön eþleþmesine bakýyoruz
-        return suggested == device;
+        if (wire == null) return;
+
+        // Kayma yönünü otomatik tahmin et
+        //PoleType suggestedDirection = wire.GetSuggestedDirection(transform.position);
+        PoleType deviceDirection = apparatus.currentDirection;
+
+        float startT = wire.GetNormalizedT(transform.position, deviceDirection);
+
+        // Kayýþý baþlat
+        StartSlide(wire, deviceDirection, startT);
     }
 
 
-
-    private void StartSlide(Wire wire, PoleType poleType)
+    private void StartSlide(Wire wire, PoleType direction, float startT)
     {
         isSliding = true;
         rb.velocity = Vector2.zero;
         rb.isKinematic = true;
 
-        PoleType direction = GetComponent<Apparatus>().currentDirection;
+        spriteRenderer.flipX = !wire.IsDirectionRight(direction);
 
-        StartCoroutine(SlideRoutine(wire, direction));
+        StartCoroutine(SlideRoutine(wire, direction, startT));
     }
 
-    private IEnumerator SlideRoutine(Wire wire, PoleType direction)
+    private IEnumerator SlideRoutine(Wire wire, PoleType direction, float startT)
     {
         float elapsed = 0f;
-        float duration = wire.duration;
+        float duration = wire.duration * (1f - startT); // kalan mesafeye göre süre;
 
         while (elapsed < duration)
         {
-            float t = elapsed / duration;
-            transform.position = wire.GetSlidePoint(t, direction);
+            float t = Mathf.Lerp(startT, 1f, elapsed / duration);
+            Vector2 newPos = wire.GetSlidePoint(t, direction);
+            transform.position = newPos;
             elapsed += Time.deltaTime;
             yield return null;
         }
