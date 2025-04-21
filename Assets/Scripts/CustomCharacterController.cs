@@ -22,6 +22,8 @@ public class CustomCharacterController : MonoBehaviour
 
     private float horizontal;
     bool isSliding = false;
+    public float slideSpeed = 1f;
+
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
@@ -111,21 +113,28 @@ public class CustomCharacterController : MonoBehaviour
 
     private IEnumerator SlideRoutine(Wire wire, PoleType direction, float startT)
     {
-        float elapsed = 0f;
-        float duration = wire.duration * (1f - startT); // kalan mesafeye göre süre;
-        while (elapsed < duration)
+        float t = startT;
+
+        while (t < 1f)
         {
-            float t = Mathf.Lerp(startT, 1f, elapsed / duration);
+            t += Time.deltaTime * slideSpeed;
+            t = Mathf.Clamp01(t);
+
             Vector2 newPos = wire.GetSlidePoint(t, direction);
             transform.position = newPos;
-            elapsed += Time.deltaTime;
+
+            // Telin ucuna gelindiyse bitir
+            Vector2 targetPoint = direction == PoleType.Plus ? wire.minusPoint : wire.plusPoint;
+            if (Vector2.Distance(transform.position, targetPoint) < 0.05f)
+                break;
+
             yield return null;
         }
 
-        transform.rotation = Quaternion.identity;
         rb.isKinematic = false;
         isSliding = false;
     }
+
 
 
 

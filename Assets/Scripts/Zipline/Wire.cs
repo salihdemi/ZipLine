@@ -11,8 +11,6 @@ public class Wire : MonoBehaviour
     public MinusTower minusTower;
     public Vector3 plusPoint, minusPoint;
 
-    public float duration = 1;
-
     void Start()
     {
         AssignPoles();
