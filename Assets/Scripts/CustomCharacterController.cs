@@ -113,27 +113,50 @@ public class CustomCharacterController : MonoBehaviour
 
     private IEnumerator SlideRoutine(Wire wire, PoleType direction, float startT)
     {
-        float t = startT;
+        Vector2 startPos = wire.GetSlidePoint(startT, direction);
+        Vector2 endPos = direction == PoleType.Plus ? wire.minusPoint : wire.plusPoint;
+        Vector2 slideDirection = (endPos - startPos).normalized;
 
-        while (t < 1f)
+        float totalDistance = Vector2.Distance(startPos, endPos); // Toplam mesafe
+        float traveled = 0f;
+
+        // Baþlangýç hýzý ve ivme
+        float baseSpeed = 5f;
+        float acceleration = 200f;
+
+        // Telin uzunluðu, mesafeye göre hýz artýþý saðlamak için
+        float distanceFactor = 1f + (totalDistance / 10f);
+        float speed = baseSpeed * distanceFactor; // Hýzý mesafeye göre ayarlýyoruz
+
+        float elapsedTime = 0f;
+
+        // Kayma iþlemi
+        while (traveled < totalDistance)
         {
-            t += Time.deltaTime * slideSpeed;
-            t = Mathf.Clamp01(t);
+            elapsedTime += Time.deltaTime;
 
-            Vector2 newPos = wire.GetSlidePoint(t, direction);
+            // Ivme arttýkça hýz artacak
+            speed += acceleration * Time.deltaTime;
+
+            // Ýlerle
+            traveled += speed * Time.deltaTime;
+            float t = Mathf.Clamp01(traveled / totalDistance);
+
+            // Kayýþýn yeni pozisyonu
+            Vector2 newPos = Vector2.Lerp(startPos, endPos, t);
             transform.position = newPos;
-
-            // Telin ucuna gelindiyse bitir
-            Vector2 targetPoint = direction == PoleType.Plus ? wire.minusPoint : wire.plusPoint;
-            if (Vector2.Distance(transform.position, targetPoint) < 0.05f)
-                break;
 
             yield return null;
         }
 
+        // Bitince
+        transform.rotation = Quaternion.identity;
         rb.isKinematic = false;
         isSliding = false;
     }
+
+
+
 
 
 
