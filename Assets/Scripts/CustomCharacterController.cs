@@ -31,11 +31,10 @@ public class CustomCharacterController : MonoBehaviour
     void Update()
     {
         horizontal = Input.GetAxisRaw("Horizontal");
-
+        if(Input.GetKeyDown(KeyCode.E))
+        { apparatus.ToggleDirection(); }
 
         CheckJump();
-        
-
         Flip();
     }
 
@@ -82,16 +81,14 @@ public class CustomCharacterController : MonoBehaviour
         if (collision.CompareTag("Wire"))
         {
             Wire wire = collision.GetComponent<Wire>();
-            CollideWire(wire);
+            OnCollideWire(wire);
         }
     }
     //tek baþvurumluk
-    private void CollideWire(Wire wire)
+    private void OnCollideWire(Wire wire)
     {
         if (wire == null) return;
 
-        // Kayma yönünü otomatik tahmin et
-        //PoleType suggestedDirection = wire.GetSuggestedDirection(transform.position);
         PoleType deviceDirection = apparatus.currentDirection;
 
         float startT = wire.GetNormalizedT(transform.position, deviceDirection);
@@ -116,7 +113,6 @@ public class CustomCharacterController : MonoBehaviour
     {
         float elapsed = 0f;
         float duration = wire.duration * (1f - startT); // kalan mesafeye göre süre;
-
         while (elapsed < duration)
         {
             float t = Mathf.Lerp(startT, 1f, elapsed / duration);
@@ -126,8 +122,7 @@ public class CustomCharacterController : MonoBehaviour
             yield return null;
         }
 
-        transform.position = wire.GetSlidePoint(1f, direction);
-
+        transform.rotation = Quaternion.identity;
         rb.isKinematic = false;
         isSliding = false;
     }
