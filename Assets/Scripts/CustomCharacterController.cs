@@ -107,12 +107,10 @@ public class CustomCharacterController : MonoBehaviour
 
         StartCoroutine(SlideRoutine(wire, direction, startT));
     }
-
     private IEnumerator SlideRoutine(Wire wire, PoleType direction, float startT)
     {
 
         isSliding = true;
-        rb.velocity = Vector2.zero;
         rb.isKinematic = true;
 
         Vector2 startPos = wire.GetSlidePoint(startT, direction);
@@ -152,10 +150,8 @@ public class CustomCharacterController : MonoBehaviour
         }
 
         // Bitince
-        transform.rotation = Quaternion.identity;
         rb.isKinematic = false;
         isSliding = false;
-        rb.AddForce(endPos - startPos, ForceMode2D.Impulse);
     }
     
 

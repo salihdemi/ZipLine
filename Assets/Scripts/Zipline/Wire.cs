@@ -29,6 +29,10 @@ public class Wire : MonoBehaviour
         //dondur
         Vector3 direction = plusPoint - minusPoint;
         float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+
+        if (angle > 90f) { angle -= 180f; }
+        else if (angle < -90f) { angle += 180f; }
+
         transform.rotation = Quaternion.Euler(0, 0, angle);
     }
 
