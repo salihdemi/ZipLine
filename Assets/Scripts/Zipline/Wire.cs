@@ -42,6 +42,7 @@ public class Wire : MonoBehaviour
         plusPoint = plusTower.transform.position + plusTower.pointDistance;
         minusPoint = minusTower.transform.position + minusTower.pointDistance;
     }
+    /*
     public Vector2 GetSlidePoint(float slidePoint, PoleType direction)//!
     {
         if (direction == PoleType.Plus)
@@ -53,6 +54,9 @@ public class Wire : MonoBehaviour
             return Vector2.Lerp(minusPoint, plusPoint, slidePoint);
         }
     }
+    */
+
+    /*
     public float GetNormalizedT(Vector2 position, PoleType direction)
     {
         Vector2 start;
@@ -77,20 +81,49 @@ public class Wire : MonoBehaviour
 
         return Mathf.Clamp01(t);
     }
+    */
 
 
-    public bool IsDirectionRight(PoleType direction)
+    private Vector3 Distance(PoleType poleType)
     {
-        Vector2 moveVector;
-
-        if (direction == PoleType.Plus)
-            moveVector = minusPoint - plusPoint;
+        if(poleType == PoleType.Plus)
+        {
+            return minusPoint - plusPoint;
+        }
         else
-            moveVector = plusPoint - minusPoint;
-
-        return moveVector.x > 0;
+        {
+            return plusPoint - minusPoint;
+        }
     }
 
+    //Saga verilen kutup saga dogru götürecekse true
+    public bool IsDirectionRight(PoleType poleType)
+    {
+        float x = Distance(poleType).x;
+        if (x < 0) return false;
+        else if (x > 0) return true;
+        else
+        {
+            Debug.LogError("Kuleler üst üste");
+            return false;
+        }
+
+    }
+    public float GetHeight      (PoleType poleType)
+    {
+        return Distance(poleType).y;
+    }
+    public int GetDirection (PoleType poleType)
+    {
+        if (Distance(poleType).x > 0)
+        {
+            return 1;
+        }
+        else
+        {
+            return -1;
+        }
+    }
 
 
 

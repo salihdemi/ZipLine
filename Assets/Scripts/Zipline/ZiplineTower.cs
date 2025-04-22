@@ -2,8 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum PoleType { Plus, Minus }
-
 public abstract class ZiplineTower : MonoBehaviour
 {
     public virtual PoleType poleType { get; }

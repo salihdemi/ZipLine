@@ -1,6 +1,9 @@
 using UnityEngine;
 using System.Collections;
+using Unity.VisualScripting;
 
+
+public enum State { Normal, Sliding }
 public class CustomCharacterController : MonoBehaviour
 {
     [Header("Movement")]
@@ -93,13 +96,13 @@ public class CustomCharacterController : MonoBehaviour
 
         PoleType deviceDirection = apparatus.currentDirection;
 
-        float startT = wire.GetNormalizedT(transform.position, deviceDirection);
+        //float startT = wire.GetNormalizedT(transform.position, deviceDirection);
 
         // Kayýþý baþlat
-        StartSlide(wire, deviceDirection, startT);
+        StartSlide2(wire, deviceDirection);
     }
 
-
+    /*
     private void StartSlide(Wire wire, PoleType direction, float startT)
     {
 
@@ -107,6 +110,89 @@ public class CustomCharacterController : MonoBehaviour
 
         StartCoroutine(SlideRoutine(wire, direction, startT));
     }
+    */
+    private void StartSlide2(Wire wire, PoleType direction)
+    {
+
+        spriteRenderer.flipX = !wire.IsDirectionRight(direction);
+
+        StartCoroutine(SlideRoutine2(wire, direction));
+    }
+
+    private IEnumerator SlideRoutine2(Wire wire, PoleType poleType)
+    {
+        rb.isKinematic = true;
+        isSliding = true ;
+
+
+
+        // Baþlangýç hýzý ve ivme
+        float baseSpeed = slideSpeed;
+        float acceleration = 2f;
+        rb.velocity = Vector3.zero;
+
+
+        Transform holdPoint = HoldPoint(wire);//Tutunma noktasý
+        Vector3 direction = transform.right * wire.GetDirection(poleType);//Tel yönü
+
+
+
+        float elapsedTime = 0f;
+
+        Vector2 endPos = poleType == PoleType.Plus ? wire.minusPoint : wire.plusPoint;
+
+        // Kayma iþlemi
+        while (Vector3.Distance(endPos, holdPoint.position) > 0.5f)// þartý deðiþtirmek gerek
+        {
+            Debug.Log(Vector3.Distance(endPos, holdPoint.position));
+
+
+            elapsedTime += Time.deltaTime;
+
+            
+            // Ivme
+            baseSpeed += acceleration;
+
+            // Ýlerle
+            holdPoint.Translate(direction * baseSpeed * Time.deltaTime * 0.1f);
+
+            if (Vector3.Distance(holdPoint.position, transform.position) < apparatus.length)//yakýnsa
+            {
+                transform.position = Vector3.Lerp(transform.position, holdPoint.position, 0.05f);//uzakta takip etme aralýðý
+
+                transform.Rotate(Vector3.forward * -wire.GetDirection(poleType) * Time.deltaTime * 100);// dönme
+            }
+            else//uzaksa
+            {
+                transform.SetParent(holdPoint);
+            }
+
+            yield return null;
+        }
+
+        transform.rotation = Quaternion.identity;
+        transform.SetParent(null);
+        Destroy(holdPoint.gameObject);
+
+
+
+        rb.isKinematic = false;
+        isSliding = false;
+        
+    }
+    private Transform HoldPoint(Wire wire)
+    {
+        Transform holdPoint = new GameObject().transform;
+        holdPoint.position = transform.localPosition;
+        holdPoint.rotation = wire.transform.localRotation;
+        holdPoint.gameObject.name = "Hold Point";
+
+        //SpriteRenderer a = holdPoint.AddComponent<SpriteRenderer>(); a.sprite = spriteRenderer.sprite;
+
+
+        return holdPoint;
+    }
+    /*
     private IEnumerator SlideRoutine(Wire wire, PoleType direction, float startT)
     {
 
@@ -153,12 +239,7 @@ public class CustomCharacterController : MonoBehaviour
         rb.isKinematic = false;
         isSliding = false;
     }
-    
-
-
-
-
-
+    */
 
 
 
