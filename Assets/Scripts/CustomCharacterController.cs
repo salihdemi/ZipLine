@@ -1,6 +1,5 @@
 using UnityEngine;
 using System.Collections;
-using System.ComponentModel.Design;
 
 public class CustomCharacterController : MonoBehaviour
 {
@@ -45,6 +44,7 @@ public class CustomCharacterController : MonoBehaviour
         if (isSliding) return;
         rb.velocity = new Vector2(horizontal * speed, rb.velocity.y);
     }
+    #region temel hareketler
     private void CheckJump()
     {
         if (Input.GetButtonDown("Jump") && IsGrounded())
@@ -76,7 +76,7 @@ public class CustomCharacterController : MonoBehaviour
             transform.position + new Vector3(0.75f, -0.5f),
             groundLayer);
     }
-
+    #endregion
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
@@ -124,7 +124,7 @@ public class CustomCharacterController : MonoBehaviour
 
         // Baþlangýç hýzý ve ivme
         float baseSpeed = 5f;
-        float acceleration = 200f;
+        float acceleration = 20f;
 
         // Telin uzunluðu, mesafeye göre hýz artýþý saðlamak için
         float distanceFactor = 1f + (totalDistance / 10f);
@@ -155,6 +155,7 @@ public class CustomCharacterController : MonoBehaviour
         transform.rotation = Quaternion.identity;
         rb.isKinematic = false;
         isSliding = false;
+        rb.AddForce(endPos - startPos, ForceMode2D.Impulse);
     }
     
 

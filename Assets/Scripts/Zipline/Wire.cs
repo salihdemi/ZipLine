@@ -14,16 +14,8 @@ public class Wire : MonoBehaviour
     void Start()
     {
         AssignPoles();
-        plusPoint =  plusTower.transform.position + plusTower.pointDistance;
-        minusPoint = minusTower.transform.position + plusTower.pointDistance;
         AssignWire();
     }
-
-    void Update()
-    {
-
-    }
-
     private void AssignWire()
     {
         //konumlandir
