@@ -102,9 +102,6 @@ public class CustomCharacterController : MonoBehaviour
 
     private void StartSlide(Wire wire, PoleType direction, float startT)
     {
-        isSliding = true;
-        rb.velocity = Vector2.zero;
-        rb.isKinematic = true;
 
         spriteRenderer.flipX = !wire.IsDirectionRight(direction);
 
@@ -113,6 +110,11 @@ public class CustomCharacterController : MonoBehaviour
 
     private IEnumerator SlideRoutine(Wire wire, PoleType direction, float startT)
     {
+
+        isSliding = true;
+        rb.velocity = Vector2.zero;
+        rb.isKinematic = true;
+
         Vector2 startPos = wire.GetSlidePoint(startT, direction);
         Vector2 endPos = direction == PoleType.Plus ? wire.minusPoint : wire.plusPoint;
         Vector2 slideDirection = (endPos - startPos).normalized;
@@ -131,13 +133,13 @@ public class CustomCharacterController : MonoBehaviour
         float elapsedTime = 0f;
 
         // Kayma iþlemi
-        while (traveled < totalDistance)
+        //while (traveled < totalDistance)
+        while (Vector3.Distance(endPos, transform.position) > 0.1f)
         {
             elapsedTime += Time.deltaTime;
 
             // Ivme arttýkça hýz artacak
             speed += acceleration * Time.deltaTime;
-
             // Ýlerle
             traveled += speed * Time.deltaTime;
             float t = Mathf.Clamp01(traveled / totalDistance);
@@ -154,6 +156,7 @@ public class CustomCharacterController : MonoBehaviour
         rb.isKinematic = false;
         isSliding = false;
     }
+    
 
 
 
