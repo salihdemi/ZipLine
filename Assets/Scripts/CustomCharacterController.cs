@@ -95,6 +95,13 @@ public class CustomCharacterController : MonoBehaviour
             OnCollideWire(wire);
         }
     }
+    private void OnTriggerExit2D(Collider2D collision)
+    {
+        if (collision.CompareTag("Wire") && isSliding)
+        {
+            //Debug.LogError("Telden koptu");
+        }
+    }
     //tek baþvurumluk
     private void OnCollideWire(Wire wire)
     {
