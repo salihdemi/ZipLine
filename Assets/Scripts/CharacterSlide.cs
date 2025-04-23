@@ -4,24 +4,24 @@ using UnityEngine;
 
 public class CharacterSlide : MonoBehaviour
 {
+    #region Classlar
     private CustomCharacterController controller;
-
     private SpriteRenderer spriteRenderer;
     private Rigidbody2D rb;
+    #endregion
 
+    [Header("SlideSpeed")]
     public float slideBaseSpeed = 1f;
     public float limitSpeed = 500f;
+    public float acceleration = 2f;
 
-
+    public float gravityScale = 3;
 
     [HideInInspector]
     public bool isFlying = false;
 
     private void Awake()
     {
-        //Application.targetFrameRate = 15;
-
-
         controller = GetComponent<CustomCharacterController>();
 
         spriteRenderer = GetComponent<SpriteRenderer>();
@@ -43,68 +43,47 @@ public class CharacterSlide : MonoBehaviour
 
 
         // Baþlangýç hýzý ve ivme
-        float baseSpeed = slideBaseSpeed;
-        float acceleration = 2f;
-        rb.velocity = Vector3.zero;
+        float speed = slideBaseSpeed;
 
 
 
         Vector3 direction = wire.transform.right * wire.GetDirection(poleType);//Tel yönü
 
-        float elapsedTime = 0f;
 
         Vector3 endPos = poleType == PoleType.Plus ? wire.minusPoint : wire.plusPoint;
 
+        float elapsedTime = 0f;
         rb.gravityScale = 0;
         // Kayma iþlemi
-        while (Vector3.Dot(endPos - transform.position, direction) > 0f)// þartý deðiþtirmek gerek
+        while (Vector3.Dot(endPos - transform.position, direction) > 0f)
         {
             elapsedTime += Time.deltaTime;
 
             
             // Ivme
-            if(baseSpeed < limitSpeed)
+            if(speed < limitSpeed)
             {
-                baseSpeed += acceleration * Time.deltaTime * 100;//çarpan koy!
+                speed += acceleration * Time.deltaTime * 100;
             }
             else
             {
-                baseSpeed = limitSpeed;
+                speed = limitSpeed;
             }
 
             // Ýlerle
-            rb.velocity = direction * baseSpeed * 0.1f;
+            rb.velocity = direction * speed * 0.1f;
             yield return null;
         }
         controller.isSliding = false;
 
-        rb.gravityScale = 3;
-        isFlying = true;
+        rb.gravityScale = gravityScale;
 
+        isFlying = true;
         while (isFlying)
         {
             isFlying = !controller.IsGrounded();
             yield return null;
         }
-
-
         isFlying = false;
-
-
-
-        //Fýrlat
-        /*
-        isFlying = true;
-        while (isFlying)
-        {
-            Vector2 launchForce = direction * baseSpeed * 0.1f;
-            rb.velocity = launchForce;
-            Debug.Log(launchForce);
-
-            isFlying = !controller.IsGrounded();
-            yield return null;
-        }
-        */
-
     }
 }
