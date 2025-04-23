@@ -86,4 +86,16 @@ public class CharacterSlide : MonoBehaviour
         }
         isFlying = false;
     }
+    /*private Transform HoldPoint(Wire wire)
+    {
+        Transform holdPoint = new GameObject().transform;
+        holdPoint.position = transform.localPosition;
+        holdPoint.rotation = wire.transform.localRotation;
+        holdPoint.gameObject.name = "Hold Point";
+
+        //SpriteRenderer a = holdPoint.AddComponent<SpriteRenderer>(); a.sprite = spriteRenderer.sprite;
+
+
+        return holdPoint;
+    }*/
 }
