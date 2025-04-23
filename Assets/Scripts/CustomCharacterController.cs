@@ -144,9 +144,6 @@ public class CustomCharacterController : MonoBehaviour
         // Kayma iþlemi
         while (Vector3.Distance(endPos, holdPoint.position) > 0.5f)// þartý deðiþtirmek gerek
         {
-            Debug.Log(Vector3.Distance(endPos, holdPoint.position));
-
-
             elapsedTime += Time.deltaTime;
 
             
@@ -155,7 +152,7 @@ public class CustomCharacterController : MonoBehaviour
 
             // Ýlerle
             holdPoint.Translate(direction * baseSpeed * Time.deltaTime * 0.1f);
-
+            /*
             if (Vector3.Distance(holdPoint.position, transform.position) < apparatus.length)//yakýnsa
             {
                 transform.position = Vector3.Lerp(transform.position, holdPoint.position, 0.05f);//uzakta takip etme aralýðý
@@ -166,7 +163,8 @@ public class CustomCharacterController : MonoBehaviour
             {
                 transform.SetParent(holdPoint);
             }
-
+            */
+            transform.position = holdPoint.position;
             yield return null;
         }
 
