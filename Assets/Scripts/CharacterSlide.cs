@@ -5,14 +5,15 @@ using UnityEngine;
 public class CharacterSlide : MonoBehaviour
 {
     #region Classlar
-    private CustomCharacterController controller;
     private SpriteRenderer spriteRenderer;
     private Rigidbody2D rb;
+    private CustomCharacterController controller;
+    private Apparatus apparatus;
     #endregion
 
     [Header("SlideSpeed")]
     public float slideBaseSpeed = 1f;
-    public float limitSpeed = 500f;
+    public float limitSpeed = 500;
     public float acceleration = 2f;
 
     public float gravityScale = 3;
@@ -20,12 +21,48 @@ public class CharacterSlide : MonoBehaviour
     [HideInInspector]
     public bool isFlying = false;
 
+    public bool onWire;
+
     private void Awake()
     {
-        controller = GetComponent<CustomCharacterController>();
-
         spriteRenderer = GetComponent<SpriteRenderer>();
         rb = GetComponent<Rigidbody2D>();
+     
+        controller = GetComponent<CustomCharacterController>();
+        apparatus = GetComponent<Apparatus>();
+    }
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.E))
+        { apparatus.ToggleDirection(); }
+    }
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.CompareTag("Wire"))
+        {
+            Wire wire = collision.GetComponent<Wire>();
+            OnCollideWire(wire);
+        }
+    }
+    private void OnTriggerExit2D(Collider2D collision)
+    {
+        if (collision.CompareTag("Wire"))
+        {
+            // Telde deðil
+            onWire = false;
+        }
+    }
+    // Tek baþvurumluk
+    private void OnCollideWire(Wire wire)
+    {
+        // Telde
+        onWire = true;
+
+        // Kutbu belirle
+        PoleType deviceDirection = apparatus.currentDirection;
+
+        // Kayýþý baþlat
+        StartSlide(wire, deviceDirection);
     }
     public void StartSlide(Wire wire, PoleType direction)
     {
@@ -50,12 +87,24 @@ public class CharacterSlide : MonoBehaviour
         Vector3 direction = wire.transform.right * wire.GetDirection(poleType);//Tel yönü
 
 
-        Vector3 endPos = poleType == PoleType.Plus ? wire.minusPoint : wire.plusPoint;
+        //Vector3 endPos = poleType == PoleType.Plus ? wire.minusPoint : wire.plusPoint;
+        /*
+        Vector3 endPos;
+        if (poleType == PoleType.Plus)
+        {
+            endPos = wire.minusPoint;
+        }
+        else
+        {
+            endPos = wire.plusPoint;
+        }
+        */
 
         float elapsedTime = 0f;
         rb.gravityScale = 0;
         // Kayma iþlemi
-        while (Vector3.Dot(endPos - transform.position, direction) > 0f)
+        //while (Vector3.Dot(endPos - transform.position, direction) > 0f)
+        while (onWire)
         {
             elapsedTime += Time.deltaTime;
 

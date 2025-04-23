@@ -335,7 +335,6 @@ MonoBehaviour:
   minusTower: {fileID: 1732108949011195905}
   plusPoint: {x: 0, y: 0, z: 0}
   minusPoint: {x: 0, y: 0, z: 0}
-  duration: 1
 --- !u!61 &8420848292208560192
 BoxCollider2D:
   m_ObjectHideFlags: 0

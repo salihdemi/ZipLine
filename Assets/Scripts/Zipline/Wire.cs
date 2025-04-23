@@ -13,6 +13,7 @@ public class Wire : MonoBehaviour
 
     void Start()
     {
+        Application.targetFrameRate = 60;
         AssignPoles();
         AssignWire();
     }

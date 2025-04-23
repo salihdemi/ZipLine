@@ -21,7 +21,6 @@ public class CustomCharacterController : MonoBehaviour
     private CharacterSlide characterSlide;
     private Rigidbody2D rb;
     private SpriteRenderer spriteRenderer;
-    private Apparatus apparatus;
     #endregion
 
     private float horizontal;
@@ -30,24 +29,19 @@ public class CustomCharacterController : MonoBehaviour
 
      float gravityScale;
 
-
     private void Awake()
     {
-        characterSlide = GetComponent<CharacterSlide>();
         rb = GetComponent<Rigidbody2D>();
         spriteRenderer = GetComponent<SpriteRenderer>();
-        apparatus = GetComponent<Apparatus>();
+        characterSlide = GetComponent<CharacterSlide>();
     }
     void Update()
     {
         horizontal = Input.GetAxisRaw("Horizontal");
-        if(Input.GetKeyDown(KeyCode.E))
-        { apparatus.ToggleDirection(); }
 
         CheckJump();
         Flip();
     }
-
     private void FixedUpdate()
     {
         if(!isSliding && !characterSlide.isFlying)
@@ -86,33 +80,6 @@ public class CustomCharacterController : MonoBehaviour
             transform.position + new Vector3(0.75f, -0.5f),
             groundLayer);
         return isGrounded;
-    }
-    private void OnTriggerEnter2D(Collider2D collision)
-    {
-        if (collision.CompareTag("Wire"))
-        {
-            Wire wire = collision.GetComponent<Wire>();
-            OnCollideWire(wire);
-        }
-    }
-    private void OnTriggerExit2D(Collider2D collision)
-    {
-        if (collision.CompareTag("Wire") && isSliding)
-        {
-            //Debug.LogError("Telden koptu");
-        }
-    }
-    //tek baþvurumluk
-    private void OnCollideWire(Wire wire)
-    {
-        if (wire == null) return;
-
-        PoleType deviceDirection = apparatus.currentDirection;
-
-        //float startT = wire.GetNormalizedT(transform.position, deviceDirection);
-
-        // Kayýþý baþlat
-        characterSlide.StartSlide(wire, deviceDirection);
     }
 
 
