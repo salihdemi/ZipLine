@@ -9,7 +9,8 @@ public class CharacterSlide : MonoBehaviour
     SpriteRenderer spriteRenderer;
     Rigidbody2D rb;
 
-    private float slideSpeed = 1f;
+    private float slideBaseSpeed = 1f;
+    private float limitSpeed = 500f;
 
     [HideInInspector]
     public bool isFlying = false;
@@ -37,7 +38,7 @@ public class CharacterSlide : MonoBehaviour
 
 
         // Baþlangýç hýzý ve ivme
-        float baseSpeed = slideSpeed;
+        float baseSpeed = slideBaseSpeed;
         float acceleration = 2f;
         rb.velocity = Vector3.zero;
 
@@ -57,10 +58,17 @@ public class CharacterSlide : MonoBehaviour
 
             
             // Ivme
-            baseSpeed += acceleration;
+            if(baseSpeed < limitSpeed)
+            {
+                baseSpeed += acceleration;
+            }
+            else
+            {
+                baseSpeed = limitSpeed;
+            }
 
             // Ýlerle
-            holdPoint.Translate(direction * baseSpeed * Time.deltaTime * 0.1f);
+            holdPoint.Translate(direction * baseSpeed * Time.deltaTime * 0.1f);//translate?
             /* sallanma
             if (Vector3.Distance(holdPoint.position, transform.position) < apparatus.length)//yakýnsa
             {
@@ -86,11 +94,10 @@ public class CharacterSlide : MonoBehaviour
         controller.isSliding = false;
         rb.isKinematic = false;
         //Fýrlat
-        /*
+        
         isFlying = true;
         while (isFlying)
         {
-            Debug.Log(isFlying);
             isFlying = controller.IsGrounded();
             Vector2 launchForce = direction * baseSpeed * Time.deltaTime * 0.1f;
             rb.velocity = launchForce + new Vector2(0,rb.velocity.y);
@@ -99,7 +106,7 @@ public class CharacterSlide : MonoBehaviour
         }
 
         rb.velocity = Vector2.zero;
-        */
+        
     }
     private Transform HoldPoint(Wire wire)
     {
