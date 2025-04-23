@@ -10,6 +10,7 @@ public class Wire : MonoBehaviour
     public PlusTower plusTower;
     public MinusTower minusTower;
     public Vector3 plusPoint, minusPoint;
+    public float chargeCost;
 
     void Start()
     {
@@ -36,9 +37,7 @@ public class Wire : MonoBehaviour
 
         transform.rotation = Quaternion.Euler(0, 0, angle);
     }
-
-
-    void AssignPoles()
+    private void AssignPoles()
     {
         plusPoint = plusTower.transform.localPosition + plusTower.pointDistance;
         minusPoint = minusTower.transform.localPosition + minusTower.pointDistance;
@@ -82,6 +81,22 @@ public class Wire : MonoBehaviour
         else
         {
             return -1;
+        }
+    }
+
+    public void GetState(PoleType poleType)
+    {
+        bool isRising = GetHeight(poleType) > 0;
+        bool isLinear = false;
+        // Hýzlan
+        if (!isRising && isLinear)
+        {
+
+        }
+        // Hýzlanma, þarj et
+        else if (!isRising && !isLinear)
+        {
+
         }
     }
 

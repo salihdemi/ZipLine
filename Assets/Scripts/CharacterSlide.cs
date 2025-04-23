@@ -31,11 +31,6 @@ public class CharacterSlide : MonoBehaviour
         controller = GetComponent<CustomCharacterController>();
         apparatus = GetComponent<Apparatus>();
     }
-    private void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.E))
-        { apparatus.ToggleDirection(); }
-    }
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.CompareTag("Wire"))
@@ -55,14 +50,17 @@ public class CharacterSlide : MonoBehaviour
     // Tek baþvurumluk
     private void OnCollideWire(Wire wire)
     {
-        // Telde
-        onWire = true;
+        if(apparatus.currentCharge > 0)
+        {
+            // Telde
+            onWire = true;
 
-        // Kutbu belirle
-        PoleType deviceDirection = apparatus.currentDirection;
+            // Kutbu belirle
+            PoleType deviceDirection = apparatus.currentDirection;
 
-        // Kayýþý baþlat
-        StartSlide(wire, deviceDirection);
+            // Kayýþý baþlat
+            StartSlide(wire, deviceDirection);
+        }
     }
     public void StartSlide(Wire wire, PoleType direction)
     {
@@ -71,10 +69,8 @@ public class CharacterSlide : MonoBehaviour
 
         StartCoroutine(SlideRoutine(wire, direction));
     }
-
     private IEnumerator SlideRoutine(Wire wire, PoleType poleType)
     {
-        //rb.isKinematic = true;
         controller.isSliding = true;
 
 
@@ -82,38 +78,29 @@ public class CharacterSlide : MonoBehaviour
         // Baþlangýç hýzý ve ivme
         float speed = slideBaseSpeed;
 
-
-
+        // Yön
         Vector3 direction = wire.transform.right * wire.GetDirection(poleType);//Tel yönü
 
-
-        //Vector3 endPos = poleType == PoleType.Plus ? wire.minusPoint : wire.plusPoint;
-        /*
-        Vector3 endPos;
-        if (poleType == PoleType.Plus)
-        {
-            endPos = wire.minusPoint;
-        }
-        else
-        {
-            endPos = wire.plusPoint;
-        }
-        */
-
+        // Zaman tanýmla
         float elapsedTime = 0f;
+
+        // Yerçekimini kapat
         rb.gravityScale = 0;
+
+        // Dört durum
+
         // Kayma iþlemi
-        //while (Vector3.Dot(endPos - transform.position, direction) > 0f)
         while (onWire)
         {
+            // Zaman hesaplama
             elapsedTime += Time.deltaTime;
 
-            
             // Ivme
             if(speed < limitSpeed)
             {
                 speed += acceleration * Time.deltaTime * 100;
             }
+            // Max ivme
             else
             {
                 speed = limitSpeed;
@@ -121,8 +108,20 @@ public class CharacterSlide : MonoBehaviour
 
             // Ýlerle
             rb.velocity = direction * speed * 0.1f;
+
             yield return null;
         }
+        //Þarz doldur
+        if (wire.GetHeight(poleType) < 0)
+        {
+            apparatus.currentCharge++;
+        }
+        // Þarz tüket
+        else
+        {
+            apparatus.currentCharge--;
+        }
+
         controller.isSliding = false;
 
         rb.gravityScale = gravityScale;

@@ -9,11 +9,15 @@ public class Apparatus : MonoBehaviour
     public PoleType currentDirection = PoleType.Plus;
     public float length = 0.5f;
 
-    public bool IsDirectionCompatible(PoleType suggested, PoleType device)
+    //public int chargeCapacity;
+    public int currentCharge;
+
+    private void Update()
     {
-        // Þimdilik yön eþleþmesine bakýyoruz
-        return suggested == device;
+        if (Input.GetKeyDown(KeyCode.E))
+        { ToggleDirection(); }
     }
+
     // Yönü deðiþtiren fonksiyon
     public void ToggleDirection()
     {
