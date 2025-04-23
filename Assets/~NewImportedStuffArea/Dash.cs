@@ -43,27 +43,22 @@ public class Dash : MonoBehaviour
     {
         canDash = false;
         isDashing = true;
+        float currentDashForce = dashForce;
 
-        // Dash yönünü input geldiði anda sabitle
-        Vector2 dashDirection = moveInput;
-
-        // Eðer hiç yön verilmemiþse dash atma (ya da default yön verebilirsin)
-        if (dashDirection == Vector2.zero)
+        while (currentDashForce >= 1)
         {
-            dashDirection = Vector2.right; // örneðin saða default dash
+            if(currentDashForce > dashForce / 2)//2. yarýda daha hýzlý yavaþlat
+            {
+                currentDashForce -= Time.deltaTime * 100;
+            }
+
+            currentDashForce -= Time.deltaTime * 100;
+            Debug.Log(currentDashForce);
+            rb.velocity = Vector3.right * currentDashForce;
+
+            yield return null;
         }
 
-        // Normal hareketi geçici olarak durdur
-        rb.velocity = Vector2.zero;
-
-        // Ani kuvvet uygula
-        rb.AddForce(dashDirection * dashForce, ForceMode2D.Impulse);
-
-        // Dash süresi (kýsa gecikme)
-        yield return new WaitForSeconds(0.1f);
-
-        // Cooldown
-        yield return new WaitForSeconds(dashCooldown);
         isDashing = false;
         canDash = true;
     }

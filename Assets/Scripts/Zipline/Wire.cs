@@ -39,50 +39,9 @@ public class Wire : MonoBehaviour
 
     void AssignPoles()
     {
-        plusPoint = plusTower.transform.position + plusTower.pointDistance;
-        minusPoint = minusTower.transform.position + minusTower.pointDistance;
+        plusPoint = plusTower.transform.localPosition + plusTower.pointDistance;
+        minusPoint = minusTower.transform.localPosition + minusTower.pointDistance;
     }
-    /*
-    public Vector2 GetSlidePoint(float slidePoint, PoleType direction)//!
-    {
-        if (direction == PoleType.Plus)
-        {
-            return Vector2.Lerp(plusPoint, minusPoint, slidePoint);
-        }
-        else
-        {
-            return Vector2.Lerp(minusPoint, plusPoint, slidePoint);
-        }
-    }
-    */
-
-    /*
-    public float GetNormalizedT(Vector2 position, PoleType direction)
-    {
-        Vector2 start;
-        Vector2 end;
-
-        if (direction == PoleType.Plus)
-        {
-            start = plusPoint;
-            end = minusPoint;
-        }
-        else
-        {
-            start = minusPoint;
-            end = plusPoint;
-        }
-
-        Vector2 fullVector = end - start;
-        Vector2 hitVector = position - start;
-
-        float projected = Vector2.Dot(hitVector, fullVector.normalized);
-        float t = projected / fullVector.magnitude;
-
-        return Mathf.Clamp01(t);
-    }
-    */
-
 
     private Vector3 Distance(PoleType poleType)
     {
