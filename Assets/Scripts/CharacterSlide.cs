@@ -15,9 +15,9 @@ public class CharacterSlide : MonoBehaviour
     public float acceleration = 2f;
 
 
-    private bool isOnWire;//onwire iþini ortadan kaldýrýp full isSlidingle mi yapsam acaba?!
+    private bool isOnWire;
     private bool isSliding;
-    private bool isFlying;//isgrounded ile ayný mý?!
+    private bool isFlying;
 
 
     private void Awake()
@@ -54,7 +54,6 @@ public class CharacterSlide : MonoBehaviour
         if (apparatus.currentCharge > 0)
         {
             isOnWire = true;
-            //isSliding = true;
 
             PoleType direction = apparatus.currentDirection;// Kutbu belirle
 
@@ -78,7 +77,7 @@ public class CharacterSlide : MonoBehaviour
         while (isOnWire)// Kayma iþlemi
         {
             speed = Accelerate(speed);
-            Slide(speed, direction);//1 kez çaðýr?!
+            Slide(speed, direction);
             yield return null;
         }
         EndSlide();
@@ -112,7 +111,7 @@ public class CharacterSlide : MonoBehaviour
         {
             apparatus.currentCharge--;
         }
-    }//Geçici!
+    }//Geçici^
     private void TurnCharacterToWireDirection(Wire wire, PoleType direction)
     {
         controller.spriteRenderer.flipX = !wire.IsDirectionRight(direction);

@@ -44,7 +44,6 @@ public class Wire : MonoBehaviour
         float distance = Vector2.Distance(plusPoint, minusPoint);
         Vector2 newScale = new Vector2(distance, thicness);
         transform.localScale = newScale;
-        Debug.Log("a");
     }
     private void AssignPoles()
     {
