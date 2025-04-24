@@ -890,13 +890,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 328ac1c53ed8efd4b910725d001e96bb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 4
+  speed: 400
   jumpingPower: 10
   groundCheck: {fileID: 450870213}
   groundLayer:
     serializedVersion: 2
     m_Bits: 8
-  isSliding: 0
+  targetFPS: 90
 --- !u!212 &1241484969
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -1024,7 +1024,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   currentDirection: 0
   length: 0.5
-  currentCharge: 5
+  currentCharge: 50
 --- !u!114 &1241484973
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1054,6 +1054,7 @@ MonoBehaviour:
   acceleration: 2
   gravityScale: 3
   isFlying: 0
+  isSliding: 0
   onWire: 0
 --- !u!1 &1455220103
 GameObject:
@@ -1082,7 +1083,7 @@ Transform:
   m_GameObject: {fileID: 1455220103}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 8.5, y: 1, z: 0}
+  m_LocalPosition: {x: 7.5, y: 1, z: 0}
   m_LocalScale: {x: 1.0000501, y: 7.9997997, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1264,7 +1265,7 @@ Transform:
   m_GameObject: {fileID: 1866093638}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 5, y: -3.5, z: 0}
+  m_LocalPosition: {x: 4, y: -3.5, z: 0}
   m_LocalScale: {x: 6, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1390,7 +1391,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2190392061284526528, guid: b0c00d05c27ddea47bd9cc195ce36a61, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 4.5
+      value: 6.5
       objectReference: {fileID: 0}
     - target: {fileID: 2190392061284526528, guid: b0c00d05c27ddea47bd9cc195ce36a61, type: 3}
       propertyPath: m_LocalPosition.y

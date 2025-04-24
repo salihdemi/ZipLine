@@ -20,14 +20,18 @@ public class CharacterSlide : MonoBehaviour
 
     [HideInInspector]
     public bool isFlying = false;
+    [HideInInspector]
+    public bool isSliding;
+
 
     public bool onWire;
+
 
     private void Awake()
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
         rb = GetComponent<Rigidbody2D>();
-     
+
         controller = GetComponent<CustomCharacterController>();
         apparatus = GetComponent<Apparatus>();
     }
@@ -50,7 +54,7 @@ public class CharacterSlide : MonoBehaviour
     // Tek baþvurumluk
     private void OnCollideWire(Wire wire)
     {
-        if(apparatus.currentCharge > 0)
+        if (apparatus.currentCharge > 0)
         {
             // Telde
             onWire = true;
@@ -71,7 +75,7 @@ public class CharacterSlide : MonoBehaviour
     }
     private IEnumerator SlideRoutine(Wire wire, PoleType poleType)
     {
-        controller.isSliding = true;
+        isSliding = true;
 
 
 
@@ -84,19 +88,20 @@ public class CharacterSlide : MonoBehaviour
         // Zaman tanýmla
         float elapsedTime = 0f;
 
-        // Yerçekimini kapat
-        rb.gravityScale = 0;
 
         // Dört durum
 
         // Kayma iþlemi
         while (onWire)
         {
+            // Yerçekimini kapat
+            rb.gravityScale = 0;
+
             // Zaman hesaplama
             elapsedTime += Time.deltaTime;
 
             // Ivme
-            if(speed < limitSpeed)
+            if (speed < limitSpeed)
             {
                 speed += acceleration * Time.deltaTime * 100;
             }
@@ -111,6 +116,13 @@ public class CharacterSlide : MonoBehaviour
 
             yield return null;
         }
+
+        isFlying = true;
+
+        rb.gravityScale = gravityScale;
+
+        isSliding = false;
+
         //Þarz doldur
         if (wire.GetHeight(poleType) < 0)
         {
@@ -122,17 +134,7 @@ public class CharacterSlide : MonoBehaviour
             apparatus.currentCharge--;
         }
 
-        controller.isSliding = false;
-
-        rb.gravityScale = gravityScale;
-
-        isFlying = true;
-        while (isFlying)
-        {
-            isFlying = !controller.IsGrounded();
-            yield return null;
-        }
-        isFlying = false;
+        yield return null;
     }
     /*private Transform HoldPoint(Wire wire)
     {
@@ -146,4 +148,9 @@ public class CharacterSlide : MonoBehaviour
 
         return holdPoint;
     }*/
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        Debug.Log("a");
+    }
 }

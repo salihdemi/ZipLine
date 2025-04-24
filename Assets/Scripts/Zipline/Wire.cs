@@ -14,7 +14,6 @@ public class Wire : MonoBehaviour
 
     void Start()
     {
-        Application.targetFrameRate = 60;
         AssignPoles();
         AssignWire();
     }
@@ -45,7 +44,7 @@ public class Wire : MonoBehaviour
 
     private Vector3 Distance(PoleType poleType)
     {
-        if(poleType == PoleType.Plus)
+        if (poleType == PoleType.Plus)
         {
             return minusPoint - plusPoint;
         }
@@ -68,11 +67,11 @@ public class Wire : MonoBehaviour
         }
 
     }
-    public float GetHeight      (PoleType poleType)
+    public float GetHeight(PoleType poleType)
     {
         return Distance(poleType).y;
     }
-    public int GetDirection (PoleType poleType)
+    public int GetDirection(PoleType poleType)
     {
         if (Distance(poleType).x > 0)
         {
@@ -83,7 +82,6 @@ public class Wire : MonoBehaviour
             return -1;
         }
     }
-
     public void GetState(PoleType poleType)
     {
         bool isRising = GetHeight(poleType) > 0;

@@ -7,7 +7,7 @@ public enum State { Normal, Sliding }
 public class CustomCharacterController : MonoBehaviour
 {
     [Header("Movement")]
-    public float speed = 8f;
+    public float speed = 800f;
     public float jumpingPower = 16f;
 
 
@@ -23,14 +23,22 @@ public class CustomCharacterController : MonoBehaviour
     private SpriteRenderer spriteRenderer;
     #endregion
 
-    private float horizontal;
+    public float horizontal;
 
-    public bool isSliding;
 
      float gravityScale;
 
+
+
+    [SerializeField]
+    int targetFPS;
+
+
     private void Awake()
     {
+        QualitySettings.vSyncCount = 0;
+        Application.targetFrameRate = targetFPS;
+
         rb = GetComponent<Rigidbody2D>();
         spriteRenderer = GetComponent<SpriteRenderer>();
         characterSlide = GetComponent<CharacterSlide>();
@@ -41,23 +49,21 @@ public class CustomCharacterController : MonoBehaviour
 
         CheckJump();
         Flip();
-    }
-    private void FixedUpdate()
-    {
-        if(!isSliding && !characterSlide.isFlying)
+
+        if (!characterSlide.isSliding && !characterSlide.isFlying)
         {
             rb.velocity = new Vector2(horizontal * speed, rb.velocity.y);
         }
     }
+  
     private void CheckJump()
     {
-        if (Input.GetButtonDown("Jump") && IsGrounded())
+        if (Input.GetButtonDown("Jump") && !characterSlide.isFlying && !characterSlide.isSliding)
         {
             rb.velocity = new Vector2(rb.velocity.x, jumpingPower);
             //JumpAnimation
         }
-
-        if (Input.GetButtonUp("Jump") && rb.velocity.y > 0f)
+        else if (Input.GetButtonUp("Jump") && rb.velocity.y > 0f)
         {
             rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y * 0.5f);
             //FallingAnimation
@@ -66,22 +72,27 @@ public class CustomCharacterController : MonoBehaviour
     private void Flip()
     {
         bool x = spriteRenderer.flipX;
-        if (!isSliding && (!x && horizontal < 0f || x && horizontal > 0f))
+        if (!characterSlide.isSliding && (!x && horizontal < 0f || x && horizontal > 0f))
         {
             x = !x;
         }
         spriteRenderer.flipX = x;
     }
-    public bool IsGrounded()
+
+
+    private void OnCollisionEnter2D(Collision2D collision)
     {
-        //Physics2D.OverlapCircle(groundCheck.position, 0.7f, groundLayer);
-        bool isGrounded = Physics2D.OverlapArea(
-            transform.position + new Vector3(-0.75f, -0.5f),
-            transform.position + new Vector3(0.75f, -0.5f),
-            groundLayer);
-        return isGrounded;
+        // Eðer sliding modundaysa ve yatay çarpýþma varsa
+        if (characterSlide.isFlying && collision.collider.gameObject.layer == LayerMask.NameToLayer("Ground"))
+        {
+            // Kontrolü býrak
+            characterSlide.isFlying = false;
+            // isFlying = false; // Bu satýrý buraya alma! Aþaðýda iþle
+        }
     }
 
+
+    
 
 
 
