@@ -5,14 +5,15 @@ TagManager:
   serializedVersion: 2
   tags:
   - Wire
+  - Ground
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - Ground
+  - 
   - Water
   - UI
-  - Wire
+  - 
   - 
   - 
   - 

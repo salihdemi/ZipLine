@@ -5,8 +5,6 @@ using UnityEngine;
 public class CharacterSlide : MonoBehaviour
 {
     #region Classlar
-    private SpriteRenderer spriteRenderer;
-    private Rigidbody2D rb;
     private CustomCharacterController controller;
     private Apparatus apparatus;
     #endregion
@@ -16,28 +14,24 @@ public class CharacterSlide : MonoBehaviour
     public float limitSpeed = 500;
     public float acceleration = 2f;
 
-    public float gravityScale = 3;
 
     [HideInInspector]
-    public bool isFlying = false;
-    [HideInInspector]
-    public bool isSliding;
-
-
     public bool onWire;
+
+    private bool isFlying;
+    public bool GetIsFlying() { return isFlying; }
+    private bool isSliding;
+    public bool GetIsSliding(){ return isSliding; }
 
 
     private void Awake()
     {
-        spriteRenderer = GetComponent<SpriteRenderer>();
-        rb = GetComponent<Rigidbody2D>();
-
         controller = GetComponent<CustomCharacterController>();
         apparatus = GetComponent<Apparatus>();
     }
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.CompareTag("Wire"))
+        if (collision.CompareTag("Wire"))//switch Case  eg eçir!
         {
             Wire wire = collision.GetComponent<Wire>();
             OnCollideWire(wire);
@@ -51,7 +45,6 @@ public class CharacterSlide : MonoBehaviour
             onWire = false;
         }
     }
-    // Tek baþvurumluk
     private void OnCollideWire(Wire wire)
     {
         if (apparatus.currentCharge > 0)
@@ -68,61 +61,44 @@ public class CharacterSlide : MonoBehaviour
     }
     public void StartSlide(Wire wire, PoleType direction)
     {
-
-        spriteRenderer.flipX = !wire.IsDirectionRight(direction);
-
+        TurnCharacterToWireDirection(wire, direction);
         StartCoroutine(SlideRoutine(wire, direction));
+        isSliding = true;
     }
     private IEnumerator SlideRoutine(Wire wire, PoleType poleType)
     {
-        isSliding = true;
-
-
-
-        // Baþlangýç hýzý ve ivme
-        float speed = slideBaseSpeed;
-
-        // Yön
-        Vector3 direction = wire.transform.right * wire.GetDirection(poleType);//Tel yönü
-
-        // Zaman tanýmla
-        float elapsedTime = 0f;
-
-
+        float speed = slideBaseSpeed;// Baþlangýç hýzý
+        Vector3 direction = CalculateAndGetDirection(wire, poleType);//Tel yönü
         // Dört durum
+        controller.DeActivateGravity();// Yerçekimini kapat
 
-        // Kayma iþlemi
-        while (onWire)
+        while (onWire)// Kayma iþlemi
         {
-            // Yerçekimini kapat
-            rb.gravityScale = 0;
-
-            // Zaman hesaplama
-            elapsedTime += Time.deltaTime;
-
-            // Ivme
-            if (speed < limitSpeed)
-            {
-                speed += acceleration * Time.deltaTime * 100;
-            }
-            // Max ivme
-            else
-            {
-                speed = limitSpeed;
-            }
-
-            // Ýlerle
-            rb.velocity = direction * speed * 0.1f;
-
+            speed = Accelerate(speed);
+            Slide(speed, direction);
             yield return null;
         }
+        EndSlide();
 
-        isFlying = true;
+        controller.ActivateGravity();
 
-        rb.gravityScale = gravityScale;
+        Charge(wire, poleType);
 
+    }
+    private void EndSlide()
+    {
         isSliding = false;
-
+        isFlying = true; 
+    }
+    public void StopFly()
+    {
+        if (isFlying)
+        {
+            isFlying = false;
+        }
+    }
+    private void Charge(Wire wire, PoleType poleType)
+    {
         //Þarz doldur
         if (wire.GetHeight(poleType) < 0)
         {
@@ -133,8 +109,35 @@ public class CharacterSlide : MonoBehaviour
         {
             apparatus.currentCharge--;
         }
-
-        yield return null;
+    }
+    private void TurnCharacterToWireDirection(Wire wire, PoleType direction)
+    {
+        controller.spriteRenderer.flipX = !wire.IsDirectionRight(direction);
+    }
+    private Vector3 CalculateAndGetDirection(Wire wire, PoleType poleType)
+    {
+        Vector3 right = wire.transform.transform.right;
+        float direction = wire.GetDirection(poleType);
+        return right * direction;
+    }
+    private float Accelerate(float speed)
+    {
+        // Ivme
+        if (speed < limitSpeed)
+        {
+            speed += acceleration * Time.deltaTime;
+        }
+        // Max ivme
+        else
+        {
+            speed = limitSpeed;
+            Debug.Log("Limit");
+        }
+        return speed;
+    }
+    private void Slide(float speed, Vector3 direction)
+    {
+        controller.rb.velocity = direction * speed;
     }
     /*private Transform HoldPoint(Wire wire)
     {
@@ -149,8 +152,4 @@ public class CharacterSlide : MonoBehaviour
         return holdPoint;
     }*/
 
-    private void OnCollisionEnter2D(Collision2D collision)
-    {
-        Debug.Log("a");
-    }
 }

@@ -9,56 +9,63 @@ public class CustomCharacterController : MonoBehaviour
     [Header("Movement")]
     public float speed = 800f;
     public float jumpingPower = 16f;
+    public float gravityScale = 3;
 
-
-
-
-    [Header("Ground Check")]
-    [SerializeField] private Transform groundCheck;
-    [SerializeField] private LayerMask groundLayer;
+    //private
+    private float horizontal;
+    private bool isGrounded;
 
     #region Classlar
     private CharacterSlide characterSlide;
-    private Rigidbody2D rb;
-    private SpriteRenderer spriteRenderer;
+    public Rigidbody2D rb;
+    public SpriteRenderer spriteRenderer;
     #endregion
 
-    public float horizontal;
-
-
-     float gravityScale;
-
-
-
-    [SerializeField]
-    int targetFPS;
 
 
     private void Awake()
     {
-        QualitySettings.vSyncCount = 0;
-        Application.targetFrameRate = targetFPS;
-
-        rb = GetComponent<Rigidbody2D>();
-        spriteRenderer = GetComponent<SpriteRenderer>();
-        characterSlide = GetComponent<CharacterSlide>();
+        InitializeComponents();
+        ActivateGravity();
     }
     void Update()
     {
-        horizontal = Input.GetAxisRaw("Horizontal");
-
         CheckJump();
         Flip();
+        Move();
+    }
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        switch (collision.gameObject.tag)
+        {
+            case "Ground":
+                CollideGround();
+            break;
 
-        if (!characterSlide.isSliding && !characterSlide.isFlying)
+        }
+    }
+    private void OnCollisionExit2D(Collision2D collision)
+    {
+        switch (collision.gameObject.tag)
+        {
+            case "Ground":
+                UnCollideGround();
+                break;
+
+        }
+    }
+    #region Temel Kontroller
+    private void Move()
+    {
+        horizontal = Input.GetAxisRaw("Horizontal");
+        if (NoFlyNoSlide())
         {
             rb.velocity = new Vector2(horizontal * speed, rb.velocity.y);
         }
     }
-  
     private void CheckJump()
     {
-        if (Input.GetButtonDown("Jump") && !characterSlide.isFlying && !characterSlide.isSliding)
+        if (Input.GetButtonDown("Jump") && isGrounded && NoFlyNoSlide())
         {
             rb.velocity = new Vector2(rb.velocity.x, jumpingPower);
             //JumpAnimation
@@ -69,31 +76,56 @@ public class CustomCharacterController : MonoBehaviour
             //FallingAnimation
         }
     }
+    #endregion
+
+    //private
     private void Flip()
     {
         bool x = spriteRenderer.flipX;
-        if (!characterSlide.isSliding && (!x && horizontal < 0f || x && horizontal > 0f))
+        if (!characterSlide.GetIsSliding() && (!x && horizontal < 0f || x && horizontal > 0f))
         {
             x = !x;
         }
         spriteRenderer.flipX = x;
     }
-
-
-    private void OnCollisionEnter2D(Collision2D collision)
+    private void CollideGround()
     {
-        // Eðer sliding modundaysa ve yatay çarpýþma varsa
-        if (characterSlide.isFlying && collision.collider.gameObject.layer == LayerMask.NameToLayer("Ground"))
-        {
-            // Kontrolü býrak
-            characterSlide.isFlying = false;
-            // isFlying = false; // Bu satýrý buraya alma! Aþaðýda iþle
-        }
+        isGrounded = true;
+        characterSlide.StopFly();
+        Debug.Log("collide");
+    }
+    private void UnCollideGround()
+    {
+        isGrounded = false;
+    }
+    private bool NoFlyNoSlide()
+    {
+        bool noFly = !characterSlide.GetIsFlying();
+        bool noSlide = !characterSlide.GetIsSliding();
+        return noFly && noSlide;
     }
 
+    //public
+    public void ActivateGravity()
+    {
+        rb.gravityScale = gravityScale;
+    }
+    public void DeActivateGravity()
+    {
+        rb.gravityScale = 0;
+    }
+    //FasaFiso
+    private void InitializeComponents()
+    {
+        if(rb == null)
+            rb = GetComponent<Rigidbody2D>();
 
-    
+        if(spriteRenderer == null)
+            spriteRenderer = GetComponent<SpriteRenderer>();
 
+        if(characterSlide == null)
+            characterSlide = GetComponent<CharacterSlide>();
+    }
 
 
 }
