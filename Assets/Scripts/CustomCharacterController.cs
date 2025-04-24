@@ -7,8 +7,8 @@ public enum State { Normal, Sliding }
 public class CustomCharacterController : MonoBehaviour
 {
     [Header("Movement")]
-    public float speed = 800f;
-    public float jumpingPower = 16f;
+    public float speed = 8;
+    public float jumpingPower = 10;
     public float gravityScale = 3;
 
     //private
@@ -23,6 +23,7 @@ public class CustomCharacterController : MonoBehaviour
 
 
 
+    #region Sistem Fonksiyonlarý
     private void Awake()
     {
         InitializeComponents();
@@ -42,6 +43,9 @@ public class CustomCharacterController : MonoBehaviour
                 CollideGround();
             break;
 
+            case "Wall":
+                //Sek
+                break;
         }
     }
     private void OnCollisionExit2D(Collision2D collision)
@@ -52,69 +56,14 @@ public class CustomCharacterController : MonoBehaviour
                 UnCollideGround();
                 break;
 
-        }
-    }
-    #region Temel Kontroller
-    private void Move()
-    {
-        horizontal = Input.GetAxisRaw("Horizontal");
-        if (NoFlyNoSlide())
-        {
-            rb.velocity = new Vector2(horizontal * speed, rb.velocity.y);
-        }
-    }
-    private void CheckJump()
-    {
-        if (Input.GetButtonDown("Jump") && isGrounded && NoFlyNoSlide())
-        {
-            rb.velocity = new Vector2(rb.velocity.x, jumpingPower);
-            //JumpAnimation
-        }
-        else if (Input.GetButtonUp("Jump") && rb.velocity.y > 0f)
-        {
-            rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y * 0.5f);
-            //FallingAnimation
+            case "Wall":
+
+                break;
         }
     }
     #endregion
 
-    //private
-    private void Flip()
-    {
-        bool x = spriteRenderer.flipX;
-        if (!characterSlide.GetIsSliding() && (!x && horizontal < 0f || x && horizontal > 0f))
-        {
-            x = !x;
-        }
-        spriteRenderer.flipX = x;
-    }
-    private void CollideGround()
-    {
-        isGrounded = true;
-        characterSlide.StopFly();
-        Debug.Log("collide");
-    }
-    private void UnCollideGround()
-    {
-        isGrounded = false;
-    }
-    private bool NoFlyNoSlide()
-    {
-        bool noFly = !characterSlide.GetIsFlying();
-        bool noSlide = !characterSlide.GetIsSliding();
-        return noFly && noSlide;
-    }
-
-    //public
-    public void ActivateGravity()
-    {
-        rb.gravityScale = gravityScale;
-    }
-    public void DeActivateGravity()
-    {
-        rb.gravityScale = 0;
-    }
-    //FasaFiso
+    #region Sistem Fonksiyonlarý tarafýndan çaðýrýlan fonksiyonlar
     private void InitializeComponents()
     {
         if(rb == null)
@@ -126,6 +75,57 @@ public class CustomCharacterController : MonoBehaviour
         if(characterSlide == null)
             characterSlide = GetComponent<CharacterSlide>();
     }
+    private void CollideGround()
+    {
+        isGrounded = true;
+        characterSlide.StopFly();
+    }
+    private void UnCollideGround()
+    {
+        isGrounded = false;
+    }
+    #endregion
 
+    #region Temel Kontrol fonksiyonlarý
+    private void Move()
+    {
+        horizontal = Input.GetAxisRaw("Horizontal");
+        if (characterSlide.NoFlyNoSlide())
+        {
+            rb.velocity = new Vector2(horizontal * speed, rb.velocity.y);
+        }
+    }
+    private void CheckJump()
+    {
+        if (Input.GetButtonDown("Jump") && isGrounded && characterSlide.NoFlyNoSlide())
+        {
+            rb.velocity = new Vector2(rb.velocity.x, jumpingPower);
+            //JumpAnimation
+        }
+        else if (Input.GetButtonUp("Jump") && rb.velocity.y > 0f)
+        {
+            rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y * 0.5f);
+            //FallingAnimation
+        }
+    }
+    private void Flip()
+    {
+        bool x = spriteRenderer.flipX;
+        if (characterSlide.NoFlyNoSlide() && (!x && horizontal < 0f || x && horizontal > 0f))
+        {
+            x = !x;
+        }
+        spriteRenderer.flipX = x;
+    }
+    #endregion
+
+    public void ActivateGravity()
+    {
+        rb.gravityScale = gravityScale;
+    }
+    public void DeActivateGravity()
+    {
+        rb.gravityScale = 0;
+    }
 
 }

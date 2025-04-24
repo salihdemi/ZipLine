@@ -7,7 +7,7 @@ public enum PoleType { Plus, Minus }
 public class Apparatus : MonoBehaviour
 {
     public PoleType currentDirection = PoleType.Plus;
-    public float length = 0.5f;
+    //public float length = 0.5f;// Kayma sýrasýnda sallanma için
 
     //public int chargeCapacity;
     public int currentCharge;

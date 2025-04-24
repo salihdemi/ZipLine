@@ -6,6 +6,6 @@ public abstract class ZiplineTower : MonoBehaviour
 {
     public virtual PoleType poleType { get; }
     public ZiplineTower partner;
-    public Vector3 pointDistance = new Vector3(0, 1);
+    public Vector3 pointDistance = new Vector3(0, 0.75f);
 }
 

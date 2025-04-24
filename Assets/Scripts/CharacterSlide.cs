@@ -15,56 +15,59 @@ public class CharacterSlide : MonoBehaviour
     public float acceleration = 2f;
 
 
-    [HideInInspector]
-    public bool onWire;
-
-    private bool isFlying;
-    public bool GetIsFlying() { return isFlying; }
+    private bool isOnWire;//onwire iþini ortadan kaldýrýp full isSlidingle mi yapsam acaba?!
     private bool isSliding;
-    public bool GetIsSliding(){ return isSliding; }
+    private bool isFlying;//isgrounded ile ayný mý?!
 
 
     private void Awake()
     {
-        controller = GetComponent<CustomCharacterController>();
-        apparatus = GetComponent<Apparatus>();
+        InitializeComponents();
     }
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.CompareTag("Wire"))//switch Case  eg eçir!
+        switch (collision.gameObject.tag)
         {
-            Wire wire = collision.GetComponent<Wire>();
-            OnCollideWire(wire);
+            case "Wire":
+                OnCollideWire(collision.GetComponent<Wire>());
+                break;
         }
     }
     private void OnTriggerExit2D(Collider2D collision)
     {
-        if (collision.CompareTag("Wire"))
+        switch (collision.gameObject.tag)
         {
-            // Telde deðil
-            onWire = false;
+            case "Wire":
+                isOnWire = false;
+                break;
         }
+    }
+    private void InitializeComponents()
+    {
+        if (controller == null)
+            controller = GetComponent<CustomCharacterController>();
+        if (apparatus == null)
+            apparatus = GetComponent<Apparatus>();
     }
     private void OnCollideWire(Wire wire)
     {
         if (apparatus.currentCharge > 0)
         {
-            // Telde
-            onWire = true;
+            isOnWire = true;
+            //isSliding = true;
 
-            // Kutbu belirle
-            PoleType deviceDirection = apparatus.currentDirection;
+            PoleType direction = apparatus.currentDirection;// Kutbu belirle
 
-            // Kayýþý baþlat
-            StartSlide(wire, deviceDirection);
+            StartSlide(wire, direction);// Kayýþý baþlat
+
         }
     }
     public void StartSlide(Wire wire, PoleType direction)
     {
+        isSliding = true;
         TurnCharacterToWireDirection(wire, direction);
         StartCoroutine(SlideRoutine(wire, direction));
-        isSliding = true;
-    }
+    }// Çaðýrýldýðý yere direkt yazsam?!
     private IEnumerator SlideRoutine(Wire wire, PoleType poleType)
     {
         float speed = slideBaseSpeed;// Baþlangýç hýzý
@@ -72,10 +75,10 @@ public class CharacterSlide : MonoBehaviour
         // Dört durum
         controller.DeActivateGravity();// Yerçekimini kapat
 
-        while (onWire)// Kayma iþlemi
+        while (isOnWire)// Kayma iþlemi
         {
             speed = Accelerate(speed);
-            Slide(speed, direction);
+            Slide(speed, direction);//1 kez çaðýr?!
             yield return null;
         }
         EndSlide();
@@ -109,7 +112,7 @@ public class CharacterSlide : MonoBehaviour
         {
             apparatus.currentCharge--;
         }
-    }
+    }//Geçici!
     private void TurnCharacterToWireDirection(Wire wire, PoleType direction)
     {
         controller.spriteRenderer.flipX = !wire.IsDirectionRight(direction);
@@ -117,7 +120,7 @@ public class CharacterSlide : MonoBehaviour
     private Vector3 CalculateAndGetDirection(Wire wire, PoleType poleType)
     {
         Vector3 right = wire.transform.transform.right;
-        float direction = wire.GetDirection(poleType);
+        int direction = wire.GetDirection(poleType);
         return right * direction;
     }
     private float Accelerate(float speed)
@@ -131,13 +134,18 @@ public class CharacterSlide : MonoBehaviour
         else
         {
             speed = limitSpeed;
-            Debug.Log("Limit");
         }
         return speed;
     }
     private void Slide(float speed, Vector3 direction)
     {
         controller.rb.velocity = direction * speed;
+    }
+    public bool NoFlyNoSlide()
+    {
+        bool noFly = !isFlying;
+        bool noSlide = !isSliding;
+        return noFly && noSlide;
     }
     /*private Transform HoldPoint(Wire wire)
     {

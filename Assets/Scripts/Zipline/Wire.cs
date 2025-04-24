@@ -1,40 +1,50 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class Wire : MonoBehaviour
 {
     public float thicness = 0.05f;
 
+    [SerializeField]
+    private PlusTower plusTower;
+    [SerializeField]
+    private MinusTower minusTower;
 
-    public PlusTower plusTower;
-    public MinusTower minusTower;
-    public Vector3 plusPoint, minusPoint;
-    public float chargeCost;
+    private Vector3 plusPoint;
+    private Vector3 minusPoint;
 
-    void Start()
+    private void Awake()
     {
         AssignPoles();
-        AssignWire();
+        PlaceWire();
     }
-    private void AssignWire()
+    private void PlaceWire()
     {
-        //konumlandir
+        FixPosition();// Konumlandýr
+        FixRotation();// Döndür
+        FixScale();   // Boyutlandýr
+    }
+    private void FixPosition()
+    {
         transform.localPosition = (plusPoint + minusPoint) / 2;
-
-        //boyutlandir
-        float distance = Vector2.Distance(plusPoint, minusPoint);
-        Vector2 newScale = new Vector2(distance, thicness);
-        transform.localScale = newScale;
-
-        //dondur
+    }
+    private void FixRotation()
+    {
         Vector3 direction = plusPoint - minusPoint;
         float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
 
         if (angle > 90f) { angle -= 180f; }
         else if (angle < -90f) { angle += 180f; }
-
         transform.rotation = Quaternion.Euler(0, 0, angle);
+    }
+    private void FixScale()
+    {
+        float distance = Vector2.Distance(plusPoint, minusPoint);
+        Vector2 newScale = new Vector2(distance, thicness);
+        transform.localScale = newScale;
+        Debug.Log("a");
     }
     private void AssignPoles()
     {
@@ -42,7 +52,7 @@ public class Wire : MonoBehaviour
         minusPoint = minusTower.transform.localPosition + minusTower.pointDistance;
     }
 
-    private Vector3 Distance(PoleType poleType)
+    private Vector3 GetDistanceVector(PoleType poleType)
     {
         if (poleType == PoleType.Plus)
         {
@@ -53,11 +63,9 @@ public class Wire : MonoBehaviour
             return plusPoint - minusPoint;
         }
     }
-
-    //Saga verilen kutup saga dogru götürecekse true
     public bool IsDirectionRight(PoleType poleType)
     {
-        float x = Distance(poleType).x;
+        float x = GetDistanceVector(poleType).x;
         if (x < 0) return false;
         else if (x > 0) return true;
         else
@@ -69,13 +77,19 @@ public class Wire : MonoBehaviour
     }
     public float GetHeight(PoleType poleType)
     {
-        return Distance(poleType).y;
-    }
+        return GetDistanceVector(poleType).y;
+    }//private yapýlacak!
     public int GetDirection(PoleType poleType)
     {
-        if (Distance(poleType).x > 0)
+        float x = GetDistanceVector(poleType).x;
+        if (x > 0)
         {
             return 1;
+        }
+        else if (x == 0)
+        {
+            Debug.LogError("Kuleler üst üste");
+            return 0;
         }
         else
         {
@@ -84,15 +98,25 @@ public class Wire : MonoBehaviour
     }
     public void GetState(PoleType poleType)
     {
-        bool isRising = GetHeight(poleType) > 0;
-        bool isLinear = false;
-        // Hýzlan
-        if (!isRising && isLinear)
+        bool rising = GetHeight(poleType) > 0;
+        bool linear = false;
+        // Çok hýzlan
+        if (!rising && linear)
         {
 
         }
         // Hýzlanma, þarj et
-        else if (!isRising && !isLinear)
+        else if (!rising && !linear)
+        {
+
+        }
+        // Hýzlanma-Az hýzlan þarz tüket
+        else if (rising && linear)
+        {
+
+        }
+        // Geri at- özel durum yok
+        else
         {
 
         }
