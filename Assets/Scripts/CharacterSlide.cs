@@ -72,7 +72,7 @@ public class CharacterSlide : MonoBehaviour
         float speed = slideBaseSpeed;// Baþlangýç hýzý
         Vector3 direction = CalculateAndGetDirection(wire, poleType);//Tel yönü
         // Dört durum
-        controller.DeActivateGravity();// Yerçekimini kapat
+        controller.ChangeGravityActive(false);// Yerçekimini kapat
 
         while (isOnWire)// Kayma iþlemi
         {
@@ -82,7 +82,7 @@ public class CharacterSlide : MonoBehaviour
         }
         EndSlide();
 
-        controller.ActivateGravity();
+        controller.ChangeGravityActive(true);
 
         Charge(wire, poleType);
 

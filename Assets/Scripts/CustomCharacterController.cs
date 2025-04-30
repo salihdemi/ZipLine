@@ -27,7 +27,7 @@ public class CustomCharacterController : MonoBehaviour
     private void Awake()
     {
         InitializeComponents();
-        ActivateGravity();
+        ChangeGravityActive(true);
     }
     void Update()
     {
@@ -41,7 +41,7 @@ public class CustomCharacterController : MonoBehaviour
         {
             case "Ground":
                 CollideGround();
-            break;
+                break;
 
             case "Wall":
                 //Sek
@@ -66,13 +66,13 @@ public class CustomCharacterController : MonoBehaviour
     #region Sistem Fonksiyonlarý tarafýndan çaðýrýlan fonksiyonlar
     private void InitializeComponents()
     {
-        if(rb == null)
+        if (rb == null)
             rb = GetComponent<Rigidbody2D>();
 
-        if(spriteRenderer == null)
+        if (spriteRenderer == null)
             spriteRenderer = GetComponent<SpriteRenderer>();
 
-        if(characterSlide == null)
+        if (characterSlide == null)
             characterSlide = GetComponent<CharacterSlide>();
     }
     private void CollideGround()
@@ -119,13 +119,11 @@ public class CustomCharacterController : MonoBehaviour
     }
     #endregion
 
-    public void ActivateGravity()
+    public void ChangeGravityActive(bool isActive)
     {
-        rb.gravityScale = gravityScale;
+        if (isActive)
+            rb.gravityScale = gravityScale;
+        else
+            rb.gravityScale = 0f;
     }
-    public void DeActivateGravity()
-    {
-        rb.gravityScale = 0;
-    }
-
 }
