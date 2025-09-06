@@ -17,7 +17,7 @@ public class CharacterSlide : MonoBehaviour
 
     private bool isOnWire;
     private bool isSliding;
-    private bool isFlying;
+    private bool isFlying;//Oyuncu telden ayrildiginda true olur, yere degene kadar hareket kontrolunu engeller
 
 
     private void Awake()
@@ -38,7 +38,7 @@ public class CharacterSlide : MonoBehaviour
         switch (collision.gameObject.tag)
         {
             case "Wire":
-                isOnWire = false;
+                EndSlide();
                 break;
         }
     }
@@ -80,15 +80,15 @@ public class CharacterSlide : MonoBehaviour
             Slide(speed, direction);
             yield return null;
         }
-        EndSlide();
 
-        controller.ChangeGravityActive(true);
 
-        Charge(wire, poleType);
+        //Charge(wire, poleType);
 
     }
     private void EndSlide()
     {
+        isOnWire = false;
+        controller.ChangeGravityActive(true);
         isSliding = false;
         isFlying = true; 
     }
@@ -99,7 +99,7 @@ public class CharacterSlide : MonoBehaviour
             isFlying = false;
         }
     }
-    private void Charge(Wire wire, PoleType poleType)
+    /*private void Charge(Wire wire, PoleType poleType)
     {
         //Þarz doldur
         if (wire.GetHeight(poleType) < 0)
@@ -111,7 +111,7 @@ public class CharacterSlide : MonoBehaviour
         {
             apparatus.currentCharge--;
         }
-    }//Geçici^
+    }//Geçici^*/
     private void TurnCharacterToWireDirection(Wire wire, PoleType direction)
     {
         controller.spriteRenderer.flipX = !wire.IsDirectionRight(direction);

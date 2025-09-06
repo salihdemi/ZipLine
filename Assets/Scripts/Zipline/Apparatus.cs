@@ -4,7 +4,7 @@ using UnityEngine;
 
 public enum PoleType { Plus, Minus }
 
-public class Apparatus : MonoBehaviour
+public class Apparatus : MonoBehaviour//karakter classýna koy
 {
     public PoleType currentDirection = PoleType.Plus;
     //public float length = 0.5f;// Kayma sýrasýnda sallanma için

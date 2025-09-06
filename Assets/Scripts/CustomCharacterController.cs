@@ -32,7 +32,7 @@ public class CustomCharacterController : MonoBehaviour
     void Update()
     {
         CheckJump();
-        Flip();
+        Turn();
         Move();
     }
     private void OnCollisionEnter2D(Collision2D collision)
@@ -57,32 +57,9 @@ public class CustomCharacterController : MonoBehaviour
                 break;
 
             case "Wall":
-
+                //Sekme hakkini azalt
                 break;
         }
-    }
-    #endregion
-
-    #region Sistem Fonksiyonlarý tarafýndan çaðýrýlan fonksiyonlar
-    private void InitializeComponents()
-    {
-        if (rb == null)
-            rb = GetComponent<Rigidbody2D>();
-
-        if (spriteRenderer == null)
-            spriteRenderer = GetComponent<SpriteRenderer>();
-
-        if (characterSlide == null)
-            characterSlide = GetComponent<CharacterSlide>();
-    }
-    private void CollideGround()
-    {
-        isGrounded = true;
-        characterSlide.StopFly();
-    }
-    private void UnCollideGround()
-    {
-        isGrounded = false;
     }
     #endregion
 
@@ -108,7 +85,7 @@ public class CustomCharacterController : MonoBehaviour
             //FallingAnimation
         }
     }
-    private void Flip()
+    private void Turn()
     {
         bool x = spriteRenderer.flipX;
         if (characterSlide.NoFlyNoSlide() && (!x && horizontal < 0f || x && horizontal > 0f))
@@ -119,6 +96,27 @@ public class CustomCharacterController : MonoBehaviour
     }
     #endregion
 
+    #region Diðer fonksiyonlar
+    private void InitializeComponents()
+    {
+        if (rb == null)
+            rb = GetComponent<Rigidbody2D>();
+
+        if (spriteRenderer == null)
+            spriteRenderer = GetComponent<SpriteRenderer>();
+
+        if (characterSlide == null)
+            characterSlide = GetComponent<CharacterSlide>();
+    }
+    private void CollideGround()
+    {
+        isGrounded = true;
+        characterSlide.StopFly();
+    }
+    private void UnCollideGround()
+    {
+        isGrounded = false;
+    }
     public void ChangeGravityActive(bool isActive)
     {
         if (isActive)
@@ -126,4 +124,6 @@ public class CustomCharacterController : MonoBehaviour
         else
             rb.gravityScale = 0f;
     }
+    #endregion
+
 }
