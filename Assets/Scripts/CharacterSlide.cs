@@ -94,10 +94,7 @@ public class CharacterSlide : MonoBehaviour
     }
     public void StopFly()
     {
-        if (isFlying)
-        {
-            isFlying = false;
-        }
+        isFlying = false;
     }
     /*private void Charge(Wire wire, PoleType poleType)
     {
